@@ -3,37 +3,49 @@ from astroquery.simbad import Simbad
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astroquery.gaia import Gaia
+import numpy as np
 
 dat=pd.read_csv("sb9/Main.dta",delimiter="|",dtype={"System Number":"int","1900.0 coordinates":"str","2000.0 coordinates":"str","Component":"str","Magnitude of component 1":"float","Filter component 1":"str","Magnitude of component 2":"float","Filter component 2":"str","Spectral type component 1":"str","Spectral type component 2":"str"})
 
 #GAIA distance
 f=open("sb9_position.txt","w")
-f.write("System Number|ra (degree)|dec (degree)|distance (pc)"+"\n")
+f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx"+"\n")
 for i,sysi in enumerate(dat["System Number"]):
-    pradec=dat["2000.0 coordinates"][i]
+    pradec=dat["2000.0 coordinates"][sysi]
     c=SkyCoord.from_name("J"+pradec, parse=True)
     ra=c.ra.degree
     dec=c.dec.degree
     try:
-        print(sysi)
+#    if True:
         width = u.Quantity(5, u.arcsec)
         height = u.Quantity(5, u.arcsec)
         #GAIA
         r = Gaia.query_object_async(coordinate=c, width=width, height=height)
-        plx=r["parallax"].item()
-        if plx == plx:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(1000.0/plx)+"\n")
+        plx=None
+        if len(r["parallax"]) == 0:
+            sw = False
+        elif type(r["parallax"][0]) == np.float64:
+            plx=r["parallax"][0]
+            sw = True
         else:
-            print(plx)
-            Simbad.SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/sim-script"
-            result_table = Simbad.query_region(c, radius='0d0m5s')
-            print(result_table)
-            plx=result_table["PLX_VALUE"].item()
-            if plx == plx:
-                f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(1000.0/plx)+"\n")
+            sw = False
+
+        
+        Simbad.SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/sim-script"
+        Simbad.add_votable_fields("parallax")
+        result_table = Simbad.query_region(c, radius='0d0m5s')
+        print(result_table)
+        plxs=result_table["PLX_VALUE"].item()
+        print(plxs)
+        #eplx=result_table["PLX_ERROR"].item()
+        if plxs == plxs:
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(plxs)+"|"+str(plx)+"\n")
+        else:
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|None|"+str(plx)+"\n")
 
     except:
-        f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+"\n")
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"||"+"\n")
+
 f.close()
 
 
