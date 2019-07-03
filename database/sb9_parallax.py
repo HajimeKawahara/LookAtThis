@@ -7,15 +7,22 @@ import numpy as np
 
 dat=pd.read_csv("sb9/Main.dta",delimiter="|",dtype={"System Number":"int","1900.0 coordinates":"str","2000.0 coordinates":"str","Component":"str","Magnitude of component 1":"float","Filter component 1":"str","Magnitude of component 2":"float","Filter component 2":"str","Spectral type component 1":"str","Spectral type component 2":"str"})
 
+
 #GAIA distance
-f=open("sb9_position.txt","w")
-f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx"+"\n")
+f=open("sb9_position.txt","a")
+f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
+f.close()
 for i,sysi in enumerate(dat["System Number"]):
-    pradec=dat["2000.0 coordinates"][sysi]
-    c=SkyCoord.from_name("J"+pradec, parse=True)
-    ra=c.ra.degree
-    dec=c.dec.degree
+    f=open("sb9_position.txt","a")
+
+    ##### GET positions #####
+#    if True:
     try:
+        pradec=dat["2000.0 coordinates"][sysi]
+        c=SkyCoord.from_name("J"+pradec, parse=True)
+        ra=c.ra.degree
+        dec=c.dec.degree
+
 #    if True:
         width = u.Quantity(5, u.arcsec)
         height = u.Quantity(5, u.arcsec)
@@ -29,27 +36,52 @@ for i,sysi in enumerate(dat["System Number"]):
             sw = True
         else:
             sw = False
+        print("GAIA",plx)
 
-        
         Simbad.SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/sim-script"
-        Simbad.add_votable_fields("parallax")
+        Simbad.add_votable_fields("parallax","flux(V)","flux(R)","flux(J)","flux(H)","flux(K)")
+
         result_table = Simbad.query_region(c, radius='0d0m5s')
         print(result_table)
-        plxs=result_table["PLX_VALUE"].item()
-        print(plxs)
+        if result_table is None:
+            plxs=np.nan
+            magcom="|||||"            
+        elif len(result_table) == 1:
+            plxs=result_table["PLX_VALUE"].item()
+            V=result_table["FLUX_V"].item()
+            R=result_table["FLUX_R"].item()        
+            J=result_table["FLUX_J"].item()
+            H=result_table["FLUX_H"].item()
+            K=result_table["FLUX_K"].item()            
+            magcom="|"+str(V)+"|"+str(R)+"|"+str(J)+"|"+str(H)+"|"+str(K)
+        else:
+            plxs=result_table["PLX_VALUE"][0]
+            V=result_table["FLUX_V"][0]
+            R=result_table["FLUX_R"][0] 
+            J=result_table["FLUX_J"][0]
+            H=result_table["FLUX_H"][0]
+            K=result_table["FLUX_K"][0]     
+            magcom="|"+str(V)+"|"+str(R)+"|"+str(J)+"|"+str(H)+"|"+str(K)
+
         #eplx=result_table["PLX_ERROR"].item()
         if plxs == plxs:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(plxs)+"|"+str(plx)+"\n")
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(plxs)+"|"+str(plx)+magcom+"\n")
         else:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|None|"+str(plx)+"\n")
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|None|"+str(plx)+magcom+"\n")
 
     except:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"||"+"\n")
+        try:
+            pradec=dat["2000.0 coordinates"][sysi]
+            c=SkyCoord.from_name("J"+pradec, parse=True)
+            ra=c.ra.degree
+            dec=c.dec.degreeV
+            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|||||||"+"\n")
+        except:
+            f.write(str(sysi)+"|||||||||"+"\n")
 
-f.close()
+    f.close()
 
 
-#dat2=pd.read_csv("../database/sb9/Orbits.dta",delimiter="|",dtype={"System number":"int","Orbit number for that system":"int","Period (d)":"float","error on P (d)":"float","Periastron time (JD-2400000)":"float","error on Periastron time":"float","Flag on periastron time":"str","eccentricity":"float","error on eccentricity":"float","argument of periastron (deg)":"float","error on omega":"float","K1 (km/s)":"float","error on K1 (km/s)":"float","K2 (km/s)":"float","error on K2 (km/s)":"float","systemic velocity (km/s)":"float","error on V0 (km/s)":"float","rms RV1 (km}":"float","rms RV2 (km/s)":"float","RV1":"float","RV2":"float","Grade":"float","Bibcode":"str","Contributor":"str","Accessibility":"str","Reference adopted for the times (JD or MJD)":"str"},na_values = "NaN")
 
 
 #dat3=pd.read_csv("../database/sb9/Alias.dta",delimiter="|",dtype={"System number":"int","Catalog name":"str","ID in that catalog":"str"})
