@@ -17,13 +17,15 @@ if __name__ == "__main__":
         plx_gaia=dat["GAIA plx"][i]
         theta_gaia=a*(plx_gaia)
         theta_simbad=a*(plx_simbad)
+        K1=dat["K1 (km/s)"][i]
+        K2=dat["K2 (km/s)"][i]
 
         #print(sp1,mass1,sp2,mass2)
         #print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
         #print("d=",1/(plx_simbad/1000),"pc")
         #print("theta gaia=",theta_gaia,"mas","theta simbad=",theta_simbad,"mas")
         if theta_simbad > 100:
-            print(sp1,mass1,sp2,mass2,"theta simbad=",theta_simbad,"mas")
+            print(sp1,mass1,sp2,mass2,"theta simbad=",theta_simbad,"mas",K1,K2)
 #            print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
 #            print("d=",1/(plx_simbad/1000),"pc")
 #            print("theta gaia=",theta_gaia,"mas","theta simbad=",theta_simbad,"mas")
