@@ -4,6 +4,15 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astroquery.gaia import Gaia
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser(description='get information from Simbad and GAIA TAP (DR1)')
+parser.add_argument('-i', nargs=1, default=[0], help='start index', type=int)
+parser.add_argument('-f', nargs=1, help='file', type=str)
+
+args = parser.parse_args()    
+istart = args.i[0]
+
 
 dat=pd.read_csv("sb9/Main.dta",delimiter="|",dtype={"System Number":"int","1900.0 coordinates":"str","2000.0 coordinates":"str","Component":"str","Magnitude of component 1":"float","Filter component 1":"str","Magnitude of component 2":"float","Filter component 2":"str","Spectral type component 1":"str","Spectral type component 2":"str"})
 
@@ -12,7 +21,12 @@ dat=pd.read_csv("sb9/Main.dta",delimiter="|",dtype={"System Number":"int","1900.
 #f=open("sb9_position.txt","a")
 #f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
 #f.close()
-for i,sysi in enumerate(dat["System Number"][247:]):
+if args.f:
+    namelist=np.loadtxt(args.f[0],dtype=int)
+else:
+    namelist=dat["System Number"][istart:]
+
+for i,sysi in enumerate(namelist):
     f=open("sb9_position.txt","a")
 
     ##### GET positions #####
