@@ -9,10 +9,10 @@ dat=pd.read_csv("sb9/Main.dta",delimiter="|",dtype={"System Number":"int","1900.
 
 
 #GAIA distance
-f=open("sb9_position.txt","a")
-f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
-f.close()
-for i,sysi in enumerate(dat["System Number"]):
+#f=open("sb9_position.txt","a")
+#f.write("System Number|ra (degree)|dec (degree)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
+#f.close()
+for i,sysi in enumerate(dat["System Number"][247:]):
     f=open("sb9_position.txt","a")
 
     ##### GET positions #####
