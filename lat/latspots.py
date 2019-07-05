@@ -41,7 +41,7 @@ if __name__ == "__main__":
     fig=plt.figure(figsize=(15,7))
     ax=fig.add_subplot(121)
     ic=0
-    lsarr=["solid","dashed","dotted"]
+    lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
     for i,name in enumerate(dat["Star"]):
         d=float(dat["Dist"][i])
         sp=dat["SpType"][i]
@@ -90,7 +90,8 @@ if __name__ == "__main__":
     plt.ylim(0.,90)
     plt.xlim(-12, 12)
     plt.xticks(np.arange(13)*2 -12)
-    plt.ylim(0, 90)
+    plt.ylim(10, 90)
+    plt.axhline(30.0,color="gray",lw=1)
     plt.xlabel('Hours from Midnight = '+midlocal.iso)
     plt.ylabel('Altitude [deg]')
     plt.title("SPOTS")
