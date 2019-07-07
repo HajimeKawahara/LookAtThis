@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
 
     
-    dat=pd.read_csv("../database/sb9/sb9.csv")
+    dat=pd.read_csv("../database/sb9/sb9.csv",comment="#")
     dbV=pd.read_csv("../database/sp/spV.txt",delimiter=",")
 #    print(dbV["mass"][dbV["Sp"]=="O8"].values[0])
 
@@ -52,6 +52,8 @@ if __name__ == "__main__":
         K1=dat["K1 (km/s)"][i]
         K2=dat["K2 (km/s)"][i]
 
+        if sp2 != sp2:
+            sp2="N/A"
         #print(sp1,mass1,sp2,mass2)
         #print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
         #print("d=",1/(plx_simbad/1000),"pc")
@@ -64,9 +66,10 @@ if __name__ == "__main__":
             altitude = c.transform_to(frame)
             if np.max(altitude.alt[nightmask]) > maxalt*u.deg:
                 print(name,sp1,mass1,sp2,mass2,"theta simbad=",theta_simbad,"mas",K1,K2)
-                iic=np.mod(ic,7)
-                lab=name#+", "+sp1+sp2+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta_simbad,1))+" mas,"+" H="+str(round(float(dat["H"][i]),1))
-                plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/7)])
+                iic=np.mod(ic,8)
+                print(sp1,sp2,mass1,mass2)
+                lab=name+", "+sp1+","+sp2+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta_simbad,1))+" mas,"+" H="+str(round(float(dat["H"][i]),1))+",KA="+str(round(K1,0))+" km/s, KB="+str(round(K2,0))+" km/s"
+                plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/8)])
                 ic=ic+1
 
             #            print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
