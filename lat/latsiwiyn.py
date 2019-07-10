@@ -36,50 +36,39 @@ if __name__ == "__main__":
     nightmask=(sunaltazs.alt < -0*u.deg)
 
     
-    dat=pd.read_csv("../database/spots/spots.tsv",delimiter="|")
+    dat=pd.read_csv("../database/siwiyn/siwiyn.tsv",delimiter="|",comment="#")
+    #_RAJ2000|_DEJ2000|WDS|Name|HD|HIP|Date|PA|Sep|Dmag|Wave|FWHM|f_FWHM|SimbadName|_RA|_DE
 
     fig=plt.figure(figsize=(15,7))
     ax=fig.add_subplot(121)
     ic=0
-    lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
-    for i,name in enumerate(dat["Star"]):
-        d=float(dat["Dist"][i])
-        sp=dat["SpType"][i]
-
-        mass1=float(dat["MA"][i])
-        try:
-            mass2=float(dat["MB"][i])
-            totalmass=mass1+mass2
+    lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
+    for i,name in enumerate(dat["Name"]):
+        theta=float(dat["Sep"][i])*1000.0 #[mas]
+        try: 
+            contrast = 1.0/10**(0.4*float(dat["Dmag"][i]))
         except:
-            totalmass=mass1
-            
-        acrit=float(dat["acrit"][i])
-        if is_float_expression(dat["rho"][i]):
-            theta=float(dat["rho"][i])*1000
-        else:
-            try:
-                P=float(dat["Per"][i])
-                if dat["x_Per"][i] == "yr":
-                    P=P*365
-                    
-                a=((P/365.0)**2*totalmass)**(1.0/3.0)
-                theta=a/d*1000
-            except:
-                theta=-1.0
-                
+            contrast=0.0
+            #print(name,c.to_string('hmsdms'))
+            #        if True:
+        print(i,contrast)
+        if theta > thetamin and theta < thetamax and contrast < 0.02 and contrast > 0.001:
+#            print(name,sp,mass1,mass2,"theta=",theta)
+            ra=dat["_RAJ2000"][i]
+            dec=dat["_DEJ2000"][i]
+            c = SkyCoord(ra+" "+dec, unit=(u.hourangle, u.deg))
+            #            c = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
 
-        
-        #print(name,c.to_string('hmsdms'))
-        if theta > thetamin and theta < thetamax:
-            print(name,sp,mass1,mass2,"theta=",theta)
-            ra=dat["RAJ2000"][i]
-            dec=dat["DEJ2000"][i]
-            c = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
+
 
             altitude = c.transform_to(frame)
             if np.max(altitude.alt[nightmask]) > maxalt*u.deg:
+                print(name)
+                print(c.to_string('hmsdms'))
+
                 iic=np.mod(ic,7)
-                lab=name+", "+sp+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta,1))+" mas,"+" H="+str(round(float(dat["Hmag"][i]),1))
+                #                lab=name+", "+sp+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta,1))+" mas,"+" H="+str(round(float(dat["Hmag"][i]),1))
+                lab=name+",c="+str(round(contrast,3))
                 plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/7)])
                 ic=ic+1
                 
@@ -94,6 +83,6 @@ if __name__ == "__main__":
     plt.axhline(30.0,color="gray",lw=1)
     plt.xlabel('Hours from Midnight = '+midlocal.iso)
     plt.ylabel('Altitude [deg]')
-    plt.title("SPOTS")
+    plt.title("Speckle imaging (WIYN)")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, fontsize=10)
     plt.show()

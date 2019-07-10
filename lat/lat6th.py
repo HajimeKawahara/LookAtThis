@@ -36,16 +36,16 @@ if __name__ == "__main__":
     nightmask=(sunaltazs.alt < -0*u.deg)
 
     
-    dat=pd.read_csv("../database/spots/spots.tsv",delimiter="|")
+    dat=pd.read_csv("../database/sixth/sixth.dat",delimiter="|",comment="#")
 
     fig=plt.figure(figsize=(15,7))
     ax=fig.add_subplot(121)
     ic=0
     lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
-    for i,name in enumerate(dat["Star"]):
+    for i,ra in enumerate(dat["name"]):
         d=float(dat["Dist"][i])
         sp=dat["SpType"][i]
-
+#        name=dat["HD...."][i]+"/"+dat["HIP..."][i]
         mass1=float(dat["MA"][i])
         try:
             mass2=float(dat["MB"][i])
@@ -72,8 +72,8 @@ if __name__ == "__main__":
         #print(name,c.to_string('hmsdms'))
         if theta > thetamin and theta < thetamax:
             print(name,sp,mass1,mass2,"theta=",theta)
-            ra=dat["RAJ2000"][i]
-            dec=dat["DEJ2000"][i]
+            ra=dat["RA(2000)."][i]
+            dec=dat["DEC(2000)"][i]
             c = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
 
             altitude = c.transform_to(frame)
