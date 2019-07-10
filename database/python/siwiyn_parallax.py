@@ -15,14 +15,20 @@ parser.add_argument('-f', nargs=1, help='file', type=str)
 args = parser.parse_args()    
 istart = args.i[0]
 
-dat=pd.read_csv("../siwiyn/siwiyn.tsv",delimiter="|",comment="#")
+datx=pd.read_csv("../siwiyn/siwiyn.tsv",delimiter="|",comment="#")
 #_RAJ2000|_DEJ2000|WDS|Name|HD|HIP|Date|PA|Sep|Dmag|Wave|FWHM|f_FWHM|SimbadName|_RA|_DE
+mask=~datx.duplicated(subset='Name')
+dat=datx[mask]
 
-dat=dat.set_index("Name")
+#dat=dat.set_index("Name")
+
+#print(dat["Name"].values[0])
+print(len(datx),len(dat))
+#sys.exit()
 
 #GAIA distance
 #f=open("siwiyn_position.txt","a")
-#f.write("System Number|RA(2000)|DEC(2000)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
+#f.write("System Number|name|RA(2000)|DEC(2000)|Simbad plx|GAIA plx|V|R|J|H|K"+"\n")
 #f.close()
 if args.f:
     namelist=np.loadtxt(args.f[0],dtype=int)
@@ -31,11 +37,14 @@ else:
 
 for i,sysi in enumerate(namelist):
     f=open("siwiyn_position.txt","a")
-#    sleep(2)
+    name=dat["Name"].values[sysi]
+    print(i,name)
+    
+    sleep(1)
 #    if True:
     try:
-        ra=dat["_RAJ2000"][i]
-        dec=dat["_DEJ2000"][i]
+        ra=dat["_RAJ2000"][sysi]
+        dec=dat["_DEJ2000"][sysi]
         c = SkyCoord(ra+" "+dec, unit=(u.hourangle, u.deg))
         
         width = u.Quantity(5, u.arcsec)
@@ -79,14 +88,14 @@ for i,sysi in enumerate(namelist):
 
         #eplx=result_table["PLX_ERROR"].item()
         if plxs == plxs:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|"+str(plxs)+"|"+str(plx)+magcom+"\n")
+            f.write(str(sysi)+"|"+name+"|"+str(ra)+"|"+str(dec)+"|"+str(plxs)+"|"+str(plx)+magcom+"\n")
         else:
-            f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|None|"+str(plx)+magcom+"\n")
+            f.write(str(sysi)+"|"+name+"|"+str(ra)+"|"+str(dec)+"|None|"+str(plx)+magcom+"\n")
 
     except:
         try:
-            ra=dat["_RAJ2000"][i]
-            dec=dat["_DEJ2000"][i]
+            ra=dat["_RAJ2000"][sysi]
+            dec=dat["_DEJ2000"][sysi]
             c = SkyCoord(ra+" "+dec, unit=(u.hourangle, u.deg))
             f.write(str(sysi)+"|"+str(ra)+"|"+str(dec)+"|||||||"+"\n")
         except:
