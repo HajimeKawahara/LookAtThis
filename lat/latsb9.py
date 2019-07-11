@@ -8,10 +8,11 @@ from astropy.coordinates import get_sun
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
+    obsmode="second night"
 
     thetamin=100.0 #mas
     thetamax=1000.0 #mas
-    maxalt = 30.0 #maximum altitude
+    maxalt = 40.0 #maximum altitude
     lat_subaru=19.0 + 49/60.+ 43/3600.0
     lon_subaru=155.0 + 28/60.0 + 50/3600.0 
     height_subaru = 4139.0
@@ -25,7 +26,19 @@ if __name__ == "__main__":
     times_obs = midnight + delta_midnight
     frame=AltAz(obstime=midnight+delta_midnight,location=location_subaru)
     sunaltazs = get_sun(midnight+delta_midnight).transform_to(frame)
-    nightmask=(sunaltazs.alt < -0*u.deg)
+        #### OBS mode ####
+    maskobs=np.ones(len(delta_midnight),dtype=bool)
+    ichangepoint=np.argmin(sunaltazs.alt.degree)
+    if obsmode=="first night":
+        print("first night")
+        maskobs[ichangepoint:]=False
+    elif obsmode=="second night":
+        print("second night")
+        maskobs[0:ichangepoint]=False
+#    nightmask=(sunaltazs.alt < -0*u.deg)
+#    print(len(delta_midnight[nightmask]))
+
+    nightmask=(sunaltazs.alt < -0*u.deg)*maskobs
 
 
     
