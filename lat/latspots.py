@@ -6,7 +6,7 @@ from astropy import units as u
 from astropy.time import Time
 from astropy.coordinates import get_sun
 import matplotlib.pyplot as plt
-#Seq|Star|RAJ2000|DEJ2000|Dist|n_Dist|Age|Hmag|SpType|MA|l_MB|MB|l_rho|rho|l_Per|Per|x_Per|l_Ecc|Ecc|l_acrit|acrit|Ref|SimbadName
+import argparse
 
 def is_float_expression(s):
     try:
@@ -16,17 +16,26 @@ def is_float_expression(s):
         return False
     
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Look at this from SPOTS!')
+    parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
+    parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
+    parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
+    parser.add_argument('-d', nargs=1, default=["2019-7-15"],help='observation date',type=float)
 
-    thetamin=100.0 #mas
-    thetamax=2000.0 #mas
-    maxalt = 30.0 #maximum altitude
-    lat_subaru=19.0 + 49/60.+ 43/3600.0
-    lon_subaru=155.0 + 28/60.0 + 50/3600.0 
-    height_subaru = 4139.0
+    args = parser.parse_args()    
+
+
+    
+    thetamin=args.t[0]#100.0 #mas
+    thetamax=args.t[1]#2000.0 #mas
+    maxalt = args.a[0]#30.0 #maximum altitude
+    lat_subaru=args.p[0]#19.0 + 49/60.+ 43/3600.0
+    lon_subaru=args.p[1]#155.0 + 28/60.0 + 50/3600.0 
+    height_subaru = args.p[2]#4139.0
     utcoffset = - 10.0*u.hour
-    midlocal=Time('2019-7-16 00:00:00')
+    midlocal=Time(args.d)+(1*u.d)
+    #midlocal=Time('2019-7-16 00:00:00')
     midnight = midlocal + utcoffset
-    print(midlocal.iso)
     location_subaru=EarthLocation(lat=lat_subaru*u.deg, lon=lon_subaru*u.deg, height=height_subaru*u.m)
 
     delta_midnight = np.linspace(-12, 12, 1000)*u.hour
@@ -92,7 +101,7 @@ if __name__ == "__main__":
     plt.xticks(np.arange(13)*2 -12)
     plt.ylim(10, 90)
     plt.axhline(30.0,color="gray",lw=1)
-    plt.xlabel('Hours from Midnight = '+midlocal.iso)
+    plt.xlabel('Hours from Midnight = '+midlocal.iso[0])
     plt.ylabel('Altitude [deg]')
     plt.title("SPOTS")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, fontsize=10)
