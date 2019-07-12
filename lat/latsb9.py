@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Look at this from SPOTS!')
+    parser = argparse.ArgumentParser(description='Look at this from SB9!')
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
     parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)

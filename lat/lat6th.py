@@ -16,7 +16,7 @@ def is_float_expression(s):
         return False
     
 if __name__ == "__main__":
-    sys.exit("Not prepared yet.")
+    sys.exit("Not prepared yet. Under construction!")
     thetamin=100.0 #mas
     thetamax=2000.0 #mas
     maxalt = 30.0 #maximum altitude
