@@ -7,6 +7,7 @@ from astropy.time import Time
 from astropy.coordinates import get_sun
 import matplotlib.pyplot as plt
 from astroquery.simbad import Simbad
+import argparse
 import sys
 #Seq|Star|RAJ2000|DEJ2000|Dist|n_Dist|Age|Hmag|SpType|MA|l_MB|MB|l_rho|rho|l_Per|Per|x_Per|l_Ecc|Ecc|l_acrit|acrit|Ref|SimbadName
 
@@ -18,32 +19,29 @@ def is_float_expression(s):
         return False
     
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Look at this from SPOTS!')
+    parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
+    parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
+    parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
+    parser.add_argument('-d', nargs=1, default=["2019-7-15"],help='observation date',type=str)
+    parser.add_argument('-m', nargs=1, default=["second night"],help='observing mode: full night (default), first night, second night',type=str)
+    parser.add_argument('-c', nargs=2, default=[0.03,0.05],help='contrast min max',type=float)
 
-    obsmode="second night"
-
-#    low contrast
-#    contmax=0.1
-#    contmin=0.05
-
-    
-    #mid contrast
-    contmax=0.05
-    contmin=0.03
-
-    #high contrast
-#    contmax=0.03
-#    contmin=0.001
-
-    
-    thetamin=100.0 #mas
-    thetamax=2000.0 #mas
-    maxalt = 40.0 #maximum altitude
-    lat_subaru=19.0 + 49/60.+ 43/3600.0
-    lon_subaru=155.0 + 28/60.0 + 50/3600.0 
-    height_subaru = 4139.0
+    args = parser.parse_args()        
+    thetamin=args.t[0]#100.0 #mas
+    thetamax=args.t[1]#2000.0 #mas
+    maxalt = args.a[0]#30.0 #maximum altitude
+    lat_subaru=args.p[0]#19.0 + 49/60.+ 43/3600.0
+    lon_subaru=args.p[1]#155.0 + 28/60.0 + 50/3600.0 
+    height_subaru = args.p[2]#4139.0
     utcoffset = - 10.0*u.hour
-    midlocal=Time('2019-7-16 00:00:00')
+    midlocal=Time(args.d)+(1*u.d)
     midnight = midlocal + utcoffset
+
+    obsmode=args.m[0]
+    #mid contrast
+    contmax=args.c[1]
+    contmin=args.c[0]
 
     print(midlocal.iso)
     location_subaru=EarthLocation(lat=lat_subaru*u.deg, lon=lon_subaru*u.deg, height=height_subaru*u.m)
@@ -61,6 +59,8 @@ if __name__ == "__main__":
     elif obsmode=="second night":
         print("second night")
         maskobs[0:ichangepoint]=False
+    else:
+        print("full night")
 #    nightmask=(sunaltazs.alt < -0*u.deg)
 #    print(len(delta_midnight[nightmask]))
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     plt.xticks(np.arange(13)*2 -12)
     plt.ylim(10, 90)
     plt.axhline(30.0,color="gray",lw=1)
-    plt.xlabel('Hours from Midnight = '+midlocal.iso)
+    plt.xlabel('Hours from Midnight = '+midlocal.iso[0])
     plt.ylabel('Altitude [deg]')
     plt.title("Speckle imaging (WIYN)")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, fontsize=10)
