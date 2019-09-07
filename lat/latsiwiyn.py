@@ -23,11 +23,13 @@ if __name__ == "__main__":
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
     parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
-    parser.add_argument('-d', nargs=1, default=["2019-7-15"],help='observation date',type=str)
-    parser.add_argument('-m', nargs=1, default=["second night"],help='observing mode: full night (default), first night, second night',type=str)
-    parser.add_argument('-c', nargs=2, default=[0.03,0.05],help='contrast min max',type=float)
+    parser.add_argument('-d', nargs=1, default=["2019-9-07"],help='observation date',type=str)
+    parser.add_argument('-m', nargs=1, default=["full night"],help='observing mode: full night (default), first night, second night',type=str)
+    parser.add_argument('-c', nargs=2, default=[0.03,0.1],help='contrast min max',type=float)
+    parser.add_argument('-i', nargs=1, default=["info.txt"],help='info file',type=str)
 
-    args = parser.parse_args()        
+    args = parser.parse_args()
+    infofile=args.i[0]
     thetamin=args.t[0]#100.0 #mas
     thetamax=args.t[1]#2000.0 #mas
     maxalt = args.a[0]#30.0 #maximum altitude
@@ -72,7 +74,8 @@ if __name__ == "__main__":
     fig=plt.figure(figsize=(15,7))
     ax=fig.add_subplot(121)
     ic=0
-    lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
+    lsarr=["solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted"]
+    ff=open(infofile,"a")
     for i,name in enumerate(dat["Name"]):
         theta=float(dat["Sep"][i])*1000.0 #[mas]
         try: 
@@ -91,13 +94,13 @@ if __name__ == "__main__":
 
             altitude = c.transform_to(frame)
             if np.max(altitude.alt[nightmask]) > maxalt*u.deg:
-                print(name,contrast)
 
                 J=dat["J"][i]
                 H=dat["H"][i]
                 K=dat["K"][i]
                 R=dat["R"][i]
                 V=dat["V"][i]
+                
                 if float(H) != float(H):
                     try:
                         Simbad.SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/sim-script"
@@ -108,7 +111,9 @@ if __name__ == "__main__":
                         R=result_table["FLUX_R"].item()        
                         J=result_table["FLUX_J"].item()
                         H=result_table["FLUX_H"].item()
-                        K=result_table["FLUX_K"].item()            
+                        K=result_table["FLUX_K"].item()
+
+
                     except:
                         print("==")
                 
@@ -119,12 +124,22 @@ if __name__ == "__main__":
                     sptype=result_table["SP_TYPE"][0].decode('utf-8')
                 except:
                     sptype="N/A"
+
+                if R != R:
+                    ff.write(name+","+ra+","+dec+",V="+str(round(V,1))+"\n")
+                    print(name,",",ra,",",dec,",V=",round(V,1))
+                else:
+                    ff.write(name+","+ra+","+dec+",R="+str(round(R,1))+"\n")
+                    print(name,",",ra,",",dec,",R=",round(R,1))
+
+
+                    
                 iic=np.mod(ic,7)
                 #                lab=name+", "+sp+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta,1))+" mas,"+" H="+str(round(float(dat["Hmag"][i]),1))
                 lab=name+", "+(sptype)+", contrast="+str(round(contrast,3))+", $\\theta$= "+str(round(theta,1))+" mas,"+" V="+str(round(V,1))+" R="+str(round(R,1))+" H="+str(round(H,1))
                 plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/7)])
                 ic=ic+1
-                
+    ff.close()
     plt.fill_between(delta_midnight.to('hr').value, 0, 90,
                  sunaltazs.alt < -0*u.deg, color='0.5', zorder=0)
     plt.fill_between(delta_midnight.to('hr').value, 0, 90,

@@ -13,10 +13,12 @@ if __name__ == "__main__":
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
     parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
-    parser.add_argument('-d', nargs=1, default=["2019-7-15"],help='observation date',type=str)
-    parser.add_argument('-m', nargs=1, default=["second night"],help='observing mode: full night (default), first night, second night',type=str)
+    parser.add_argument('-d', nargs=1, default=["2019-7-19"],help='observation date',type=str)
+    parser.add_argument('-m', nargs=1, default=["first night"],help='observing mode: full night (default), first night, second night',type=str)
+    parser.add_argument('-i', nargs=1, default=["info.txt"],help='info file',type=str)
 
-    args = parser.parse_args()        
+    args = parser.parse_args()
+    infofile=args.i[0]
     thetamin=args.t[0]#100.0 #mas
     thetamax=args.t[1]#2000.0 #mas
     maxalt = args.a[0]#30.0 #maximum altitude
@@ -61,6 +63,7 @@ if __name__ == "__main__":
     ax=fig.add_subplot(121)
     ic=0
     lsarr=["solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted","solid","dashed","dotted"]
+    ff=open(infofile,"a")
     for i,sp1 in enumerate(dat["Sp1"]):
         sysnum=dat["System number"][i]
         mass1=ttm.type2mass(sp1,dbV,unknownmass=0.0)
@@ -95,12 +98,23 @@ if __name__ == "__main__":
                 lab=name+", "+sp1+","+sp2+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta_simbad,1))+" mas,"+" H="+str(round(float(dat["H"][i]),1))+",KA="+str(round(K1,0))+" km/s, KB="+str(round(K2,0))+" km/s"
                 plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/8)])
                 ic=ic+1
+                R=dat["R"][i]
+                V=dat["V"][i]
+                radecx=c.to_string('hmsdms')
+                ra=radecx.split()[0]
+                dec=radecx.split()[1]
+                print(ra,dec)
+                if R != R:
+                    print(name,",",ra,",",dec,",V=",round(V,1))
+                    ff.write(name+","+ra+","+dec+",V="+str(round(V,1))+"\n")
+                else:
+                    print(name,",",ra,",",dec,",R=",round(R,1))
+                    ff.write(name+","+ra+","+dec+",R="+str(round(R,1))+"\n")
 
-            #            print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
-#            print("d=",1/(plx_simbad/1000),"pc")
-#            print("theta gaia=",theta_gaia,"mas","theta simbad=",theta_simbad,"mas")
-            
-
+        #            print("Mtot=",totalmass,"P=",P,"(d) a=",a,"au")
+        #            print("d=",1/(plx_simbad/1000),"pc")
+        #            print("theta gaia=",theta_gaia,"mas","theta simbad=",theta_simbad,"mas")
+    ff.close()            
     plt.fill_between(delta_midnight.to('hr').value, 0, 90,
                  sunaltazs.alt < -0*u.deg, color='0.5', zorder=0)
     plt.fill_between(delta_midnight.to('hr').value, 0, 90,
@@ -115,4 +129,4 @@ if __name__ == "__main__":
     plt.title("SB9")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, fontsize=10)
     plt.show()
-
+    
