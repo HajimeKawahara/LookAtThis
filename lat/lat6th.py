@@ -20,10 +20,10 @@ if __name__ == "__main__":
     thetamin=100.0 #mas
     thetamax=2000.0 #mas
     maxalt = 30.0 #maximum altitude
-    lat_subaru=19.0 + 49/60.+ 43/3600.0
-    lon_subaru=155.0 + 28/60.0 + 50/3600.0 
+    lat_subaru=19.828611
+    lon_subaru=204.51945
     height_subaru = 4139.0
-    utcoffset = - 10.0*u.hour
+    utcoffset = 10.0*u.hour
     midlocal=Time('2019-7-16 00:00:00')
     midnight = midlocal + utcoffset
     print(midlocal.iso)

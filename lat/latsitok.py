@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Look at this from Speckel Images of Tokovinin19/WIYN!')
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
-    parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
+    parser.add_argument('-p', nargs=3, default=[19.828611,204.51945,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
     parser.add_argument('-d', nargs=1, default=["2019-9-07"],help='observation date',type=str)
     parser.add_argument('-m', nargs=1, default=["full night"],help='observing mode: full night (default), first night, second night',type=str)
 #    parser.add_argument('-c', nargs=2, default=[0.03,0.1],help='contrast min max',type=float)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     yeardiff=(timediff.jd/365.242189)
     
     height_subaru = args.p[2]#4139.0
-    utcoffset = - 11.0*u.hour
+    utcoffset = 10.0*u.hour
     midlocal=Time(today)+(1*u.d)
     midnight = midlocal + utcoffset
 

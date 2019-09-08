@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Look at this from SB9!')
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
-    parser.add_argument('-p', nargs=3, default=[19.828611,155.48055,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
+    parser.add_argument('-p', nargs=3, default=[19.828611,204.51945,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
     parser.add_argument('-d', nargs=1, default=["2019-7-19"],help='observation date',type=str)
     parser.add_argument('-m', nargs=1, default=["first night"],help='observing mode: full night (default), first night, second night',type=str)
     parser.add_argument('-i', nargs=1, default=["info.txt"],help='info file',type=str)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     lat_subaru=args.p[0]#19.0 + 49/60.+ 43/3600.0
     lon_subaru=args.p[1]#155.0 + 28/60.0 + 50/3600.0 
     height_subaru = args.p[2]#4139.0
-    utcoffset = - 10.0*u.hour
+    utcoffset = 10.0*u.hour
     midlocal=Time(args.d)+(1*u.d)
     midnight = midlocal + utcoffset
 
