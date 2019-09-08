@@ -2,7 +2,7 @@
 
 LAT provides targets for direct imaging test using spots, speckle images (WIYN), SB9  and more ...
 
-- lattokov.py from speckle interferometer (w/ orbital information), Tokovin+2019.
+- lattokov.py from speckle interferometer (w/ orbital information), Tokovinin+2019.
 - latsb9.py from SB9
 - latspots.py from SPOTS
 - latsiwiyn.py from speckle images by WIYN
