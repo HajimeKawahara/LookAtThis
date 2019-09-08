@@ -26,13 +26,14 @@ else:
     namelist=range(istart,len(dat))
 
 for i,sysi in enumerate(namelist):
+    gw=open("namesimbad.txt","a")
     f=open("sitok_positionA.txt","a")
     name=dat["Name"].values[sysi]
     print(i,name)
     
     sleep(1.5)
-#    if True:
-    try:
+    if True:
+#    try:
         radec=dat["pos"][sysi]
         sep=dat["sep"][sysi]
         sp=dat["sp"][sysi]
@@ -63,6 +64,13 @@ for i,sysi in enumerate(namelist):
             plxs=np.nan
             magcom="|||||"            
         else:
+            simbadname=result_table["MAIN_ID"][0]
+            print("--------------------------")
+            print(name,simbadname)
+            gw.write(name+"|"+simbadname.decode("utf-8")+"\n")
+            print("--------------------------")
+            name=simbadname.decode("utf-8") #rename
+            
             plxs=result_table["PLX_VALUE"][0]
             V=result_table["FLUX_V"][0]
             R=result_table["FLUX_R"][0] 
@@ -81,18 +89,17 @@ for i,sysi in enumerate(namelist):
         else:
             f.write(str(sysi)+"|"+name+"|"+str(radec)+"|"+str(sep)+"|"+str(sp)+"|None|"+str(plx)+magcom+"|"+radecinfo+"\n")
 
-
-    except:
-        try:
-            radec=dat["pos"][sysi]
-            sep=dat["sep"][sysi]
-            c = SkyCoord(radec, unit=(u.hourangle, u.deg))
-            f.write(str(sysi)+"|"+str(radec)+"|"+str(sep)+"|"+str(sp)+"||||||"+"\n")
-        except:
-            f.write(str(sysi)+"||||||||||"+"\n")
+#    except:
+#        try:
+#            radec=dat["pos"][sysi]
+#            sep=dat["sep"][sysi]
+#            c = SkyCoord(radec, unit=(u.hourangle, u.deg))
+#            f.write(str(sysi)+"|"+str(radec)+"|"+str(sep)+"|"+str(sp)+"||||||"+"\n"#)
+#        except:
+#            f.write(str(sysi)+"||||||||||"+"\n")
 
     f.close()
-
+    gw.close()
 
 
 

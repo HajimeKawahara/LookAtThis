@@ -91,7 +91,6 @@ if __name__ == "__main__":
             #            c = SkyCoord(ra, dec, unit=(u.hourangle, u.deg))
 
 
-
             altitude = c.transform_to(frame)
             if np.max(altitude.alt[nightmask]) > maxalt*u.deg:
 
