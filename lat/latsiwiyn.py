@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from astroquery.simbad import Simbad
 import argparse
 import sys
+
+
 #Seq|Star|RAJ2000|DEJ2000|Dist|n_Dist|Age|Hmag|SpType|MA|l_MB|MB|l_rho|rho|l_Per|Per|x_Per|l_Ecc|Ecc|l_acrit|acrit|Ref|SimbadName
 
 def is_float_expression(s):
@@ -38,7 +40,7 @@ if __name__ == "__main__":
     height_subaru = args.p[2]#4139.0
     utcoffset = 10.0*u.hour
     midlocal=Time(args.d)+(1*u.d)
-    midnight = midlocal + utcoffset
+    midnight = midlocal + utcoffset #utc
 
     obsmode=args.m[0]
     #mid contrast
@@ -76,8 +78,17 @@ if __name__ == "__main__":
     ic=0
     lsarr=["solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted","dashdot","solid","dashed","dotted"]
     ff=open(infofile,"a")
+
+    paarray=[]
+    separray=[]
+    namearray=[]
+    raarray=[]
+    decarray=[]
+    maskar=[]
     for i,name in enumerate(dat["Name"]):
         theta=float(dat["Sep"][i])*1000.0 #[mas]
+        pa=float(dat["PA"][i])
+
         try: 
             contrast = 1.0/10**(0.4*float(dat["Dmag"][i]))
         except:
@@ -127,17 +138,23 @@ if __name__ == "__main__":
 
                 if R != R:
                     ff.write(name+","+ra+","+dec+",V="+str(round(V,1))+"\n")
-                    print(name,",",ra,",",dec,",V=",round(V,1))
+                    print(name,",",pa,",",theta,"mas ,",ra,",",dec,",V=",round(V,1))
                 else:
                     ff.write(name+","+ra+","+dec+",R="+str(round(R,1))+"\n")
-                    print(name,",",ra,",",dec,",R=",round(R,1))
-
-
+                    print(name,",",pa,",",theta,"mas ,",ra,",",dec,",R=",round(R,1))
+                namearray.append(name)
+                paarray.append(pa)
+                separray.append(theta)
+                raarray.append(ra)
+                decarray.append(dec)
                     
                 iic=np.mod(ic,7)
                 #                lab=name+", "+sp+", mA="+str(mass1)+", mB="+str(mass2)+", $\\theta$= "+str(round(theta,1))+" mas,"+" H="+str(round(float(dat["Hmag"][i]),1))
                 lab=name+", "+(sptype)+", contrast="+str(round(contrast,3))+", $\\theta$= "+str(round(theta,1))+" mas,"+" V="+str(round(V,1))+" R="+str(round(R,1))+" H="+str(round(H,1))
                 plt.plot(delta_midnight,altitude.alt,label=lab,color="C"+str(iic),ls=lsarr[int(ic/7)])
+
+                maskar.append(altitude.alt>0.0)
+
                 ic=ic+1
     ff.close()
     plt.fill_between(delta_midnight.to('hr').value, 0, 90,
@@ -153,4 +170,28 @@ if __name__ == "__main__":
     plt.ylabel('Altitude [deg]')
     plt.title("Speckle imaging (WIYN)")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0, fontsize=10)
+    plt.show()
+
+    import astroplan
+    from astroplan.plots import plot_parallactic
+    from astroplan import Observer
+    from astroplan import FixedTarget
+    from astropy.time import Time
+
+    subaru = Observer.at_site("subaru")
+    ic=0
+    for i,name in enumerate(namearray):
+        print(name)
+        target=FixedTarget.from_name(name)
+        dphi=np.mod(subaru.parallactic_angle(times_obs,target).value-paarray[i],2*np.pi)
+        iic=np.mod(ic,7)
+        #        plt.plot_date(times_obs.plot_date,dphi,'b-',label=name,color="C"+str(iic),ls=lsarr[int(ic/7)])
+        plt.plot(delta_midnight[maskar[i]],dphi[maskar[i]],label=name,color="C"+str(iic),ls=lsarr[int(ic/7)])        
+        ic=ic+1
+    plt.fill_between(delta_midnight.to('hr').value, 0, 2*np.pi,
+                 sunaltazs.alt < -0*u.deg, color='0.5', zorder=0)
+    plt.fill_between(delta_midnight.to('hr').value, 0, 2*np.pi,
+                 sunaltazs.alt < -18*u.deg, color='k', zorder=0)
+    plt.legend()
+    plt.ylabel("parallactic angle - PA")
     plt.show()

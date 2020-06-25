@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
     parser.add_argument('-p', nargs=3, default=[19.828611,204.51945,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
-    parser.add_argument('-d', nargs=1, default=["2019-9-07"],help='observation date',type=str)
+    parser.add_argument('-d', nargs=1, default=["2020-1-30"],help='observation date',type=str)
     parser.add_argument('-m', nargs=1, default=["full night"],help='observing mode: full night (default), first night, second night',type=str)
 #    parser.add_argument('-c', nargs=2, default=[0.03,0.1],help='contrast min max',type=float)
     parser.add_argument('-i', nargs=1, default=["info.txt"],help='info file',type=str)

@@ -17,3 +17,4 @@ NO WARRANTY and GOOD LUCK for your observation ;)
 ### note for me
 
 Simbad Votable output: http://simbad.u-strasbg.fr/Pages/guide/sim-fscript.htx
+astroplan for pallactic angle
