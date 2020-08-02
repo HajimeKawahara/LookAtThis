@@ -15,7 +15,7 @@ NO WARRANTY and GOOD LUCK for your observation ;)
 ### Additional information based on REACH calibration observation
 
 - July 5 (2020) HIP 93935 is a tight binary (sep < 0.1 arcsec) + a companion.
-
+- August 1 (2020) HIP 118015 is a tight binary + a companion.
 
 ### note for me
 
