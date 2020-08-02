@@ -1,4 +1,4 @@
-WDS,AName,Name,RA,DEC,date,TMP,PA,paerr,Sep,seperr,Dmag,TMP2,TMP3
+WDS,AName,Name,RA,DEC,date,TMP,PA,paerr,Sep,seperr,Dmag,QFLAG,TMP3
 00006-5306, HJ 5437         ,HIP 50      ,   0.1432, -53.0976, 2019.9521 , I  2,    339.7,   0.4,   1.3647,   0.4,     3.6, ast,      0.2    0.019 Izm2019 
 00008+1659, BAG 18          ,HIP 68      ,   0.2004,  16.9882, 2019.5397 , I  2,    333.9,   1.0,   0.7200,   1.0,     3.0, q,      0.1   -0.000 Tok2019c
 00012+1357, LSC 2 AaAb     ,HIP 96      ,   0.3050,  13.9751, 2019.5397 , I  2,    170.0,   0.4,   0.2465,   0.4,     1.8, q,                           

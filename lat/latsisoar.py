@@ -25,8 +25,8 @@ if __name__ == "__main__":
     parser.add_argument('-t', nargs=2, default=[100.0,2000.0],help='separation min and max (mas)',type=float)
     parser.add_argument('-a', nargs=1, default=[40.0],help='maximum elevation [deg]',type=float)
     parser.add_argument('-p', nargs=3, default=[19.828611,204.51945,4139.],help='latitude/longitude/height(m) of the observatory. Default is Maunakea',type=float)
-    parser.add_argument('-d', nargs=1, default=["2019-9-07"],help='observation date',type=str)
-    parser.add_argument('-m', nargs=1, default=["full night"],help='observing mode: full night (default), first night, second night',type=str)
+    parser.add_argument('-d', nargs=1, default=["2020-9-02"],help='observation date',type=str)
+    parser.add_argument('-m', nargs=1, default=["second night"],help='observing mode: full night (default), first night, second night',type=str)
     parser.add_argument('-c', nargs=2, default=[0.03,0.1],help='contrast min max',type=float)
     parser.add_argument('-i', nargs=1, default=["info.txt"],help='info file',type=str)
 
@@ -85,10 +85,13 @@ if __name__ == "__main__":
     raarray=[]
     decarray=[]
     maskar=[]
+
+    print("WARNING IF QFLAG IS NOT q then modulo 180 for PA.")
+
     for i,name in enumerate(dat["Name"]):
         theta=float(dat["Sep"][i])*1000.0 #[mas]
         pa=float(dat["PA"][i])
-
+        qflag=dat["QFLAG"][i]
         try: 
             contrast = 1.0/10**(0.4*float(dat["Dmag"][i]))
         except:
@@ -119,7 +122,7 @@ if __name__ == "__main__":
 
                 except:
                     print("NO SIMBAD name=",name)
-                
+                    
                 try:
                     Simbad.SIMBAD_URL = "http://simbad.u-strasbg.fr/simbad/sim-script"
                     Simbad.add_votable_fields("sp")                
@@ -130,10 +133,17 @@ if __name__ == "__main__":
 
                 if R != R:
                     ff.write(name+","+ra+","+dec+",V="+str(round(V,1))+"\n")
-                    print(name,",",pa,",",theta,"mas ,",ra,",",dec,",V=",round(V,1))
+                    if qflag.replace(" ","")=="q":
+                        print(name,", QFLAG=",qflag,",",pa," deg,",theta,"mas ,",ra,",",dec,",V=",round(V,1))
+                    else:
+                        print(name,", QFLAG=",qflag,",(",pa," or ",pa-180,") deg,",theta,"mas ,",ra,",",dec,",V=",round(V,1))
+
                 else:
                     ff.write(name+","+ra+","+dec+",R="+str(round(R,1))+"\n")
-                    print(name,",",pa,",",theta,"mas ,",ra,",",dec,",R=",round(R,1))
+                    if qflag.replace(" ","")=="q":
+                        print(name,", QFLAG=",qflag,",",pa," deg,",theta,"mas ,",ra,",",dec,",V=",round(V,1))
+                    else:
+                        print(name,", QFLAG=",qflag,",(",pa," or ",pa-180,") deg,",theta,"mas ,",ra,",",dec,",V=",round(V,1))
                 namearray.append(name)
                 paarray.append(pa)
                 separray.append(theta)
